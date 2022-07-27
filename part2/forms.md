@@ -33,7 +33,7 @@ export default App;
 ```
 
 ***Controlled component***
-The controlled components method can be used to access data in teh form's input element.
+The controlled components method can be used to access data in the form's input element.
   - First use `useState` for storing the user-submitted input and set it as teh input element's value attribute
   - In order to be able to change the input element's value, we need to create an event handler that synchronizes the changes made to the input with the component's state and assign it to the `onChange` attribute of the `input` element
   - Complete the submit event handler to add to the array of notes
