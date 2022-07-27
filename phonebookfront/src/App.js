@@ -5,12 +5,46 @@ import Persons from './components/Persons';
 import personService from './services/Persons' 
 
 
-const PhoneBook = ({newFilter, handleFilterChange, handleSubmit, newName, newPhone, handleNameChange, handlePhoneChange, filteredPersons, handleDeleteButton}) => {
+const Notification = ({ message }) => {
+  const notificationStyle = {
+    color: "green",
+    background: "lightgrey",
+    fontSize: 20,
+    borderStyle: "solid",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  }
 
+  if (message === null) {
+    return null;
+  }
+
+  return (
+      <div style={notificationStyle}>
+        {message}
+      </div>
+  );
+
+}
+
+const PhoneBook = (props) => {
+  const {
+    newFilter, 
+    handleFilterChange, 
+    handleSubmit, 
+    newName, 
+    newPhone, 
+    handleNameChange, 
+    handlePhoneChange, 
+    filteredPersons, 
+    handleDeleteButton,
+    errorMessage
+  } = props;
   return (
     <div>
     <h2>Phonebook</h2>
-
+    <Notification message={errorMessage} />
     <Filter newFilter={newFilter} onChange={handleFilterChange} />
 
     <h3>add a new</h3>
@@ -35,6 +69,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [newFilter, setFiltered] = useState('');
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personService
@@ -52,7 +87,14 @@ const App = () => {
       .update(editedPerson.id, editedPerson)
       .then(returnedPerson => {
         setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson));
-      });
+        setErrorMessage(`${returnedPerson.name} edited`);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 2000);
+      }).catch(error => {
+        setErrorMessage(`${editedPerson.name} has already been removed from the server`);
+        setPersons(persons.filter(person => person.id !== editedPerson.id));
+      })
   }
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -74,6 +116,10 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName('');
         setNewPhone('');
+        setErrorMessage(`${returnedPerson.name} created`);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 2000);
       });
   }
 
@@ -93,14 +139,20 @@ const App = () => {
     const deletePerson = persons.find(person => person.id === id);
 
     if (!window.confirm(`Delete ${deletePerson.name}?`)) {
-      alert(`${deletePerson.name} wasn't deleted`);
+      setErrorMessage(`${deletePerson.name} wasn't deleted`);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 2000);
       return;
     }
     personService
       .remove(id)
       .then(message => {
         setPersons(persons.filter(person => person.id !== id));
-        alert(`${deletePerson.name} is deleted`);
+        setErrorMessage(`${deletePerson.name} is deleted`);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 2000);
       });
   }
 
@@ -121,6 +173,7 @@ const App = () => {
       handlePhoneChange={handlePhoneChange}
       filteredPersons={filteredPersons}
       handleDeleteButton={handleDeleteButton}
+      errorMessage={errorMessage}
     />
   )
 }
