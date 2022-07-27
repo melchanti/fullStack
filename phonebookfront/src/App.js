@@ -1,11 +1,11 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
+import personService from './services/Persons' 
 
 
-const PhoneBook = ({newFilter, handleFilterChange, handleSubmit, newName, newPhone, handleNameChange, handlePhoneChange, filteredPersons}) => {
+const PhoneBook = ({newFilter, handleFilterChange, handleSubmit, newName, newPhone, handleNameChange, handlePhoneChange, filteredPersons, handleDeleteButton}) => {
 
   return (
     <div>
@@ -25,7 +25,7 @@ const PhoneBook = ({newFilter, handleFilterChange, handleSubmit, newName, newPho
 
     <h3>Numbers</h3>
 
-    <Persons filteredPersons={filteredPersons} />
+    <Persons filteredPersons={filteredPersons} handleDeleteButton={handleDeleteButton}/>
   </div>
   )
 }
@@ -37,27 +37,44 @@ const App = () => {
   const [newFilter, setFiltered] = useState('');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data);
+    personService
+      .getAll()
+      .then(initialData => {
+        setPersons(initialData);
       });
   }, []);
   
+  const handleUpdate = (personToEdit, phone) => {
+
+    const editedPerson = {...personToEdit, number:phone};
+
+    personService
+      .update(editedPerson.id, editedPerson)
+      .then(returnedPerson => {
+        setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson));
+      });
+  }
   const handleSubmit = (event) => {
     event.preventDefault();
     const newPerson = {
       name: newName,
       number: newPhone,
-      id: persons.length + 1
     }
     if (persons.some(person => person.name === newPerson.name)) {
-      alert(`${newPerson.name} is already added to phonebook`);
+      if (!window.confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`)) {
+        return;
+      }
+      handleUpdate(persons.find(person => person.name === newPerson.name), newPerson.number);
       return;
     }
-    setPersons(persons.concat(newPerson));
-    setNewName('');
-    setNewPhone('');
+
+    personService
+      .create(newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName('');
+        setNewPhone('');
+      });
   }
 
   const handleNameChange = (event) => {
@@ -70,6 +87,21 @@ const App = () => {
 
   const handleFilterChange = (event) => {
     setFiltered(event.target.value);
+  }
+
+  const handleDeleteButton = (id) => {
+    const deletePerson = persons.find(person => person.id === id);
+
+    if (!window.confirm(`Delete ${deletePerson.name}?`)) {
+      alert(`${deletePerson.name} wasn't deleted`);
+      return;
+    }
+    personService
+      .remove(id)
+      .then(message => {
+        setPersons(persons.filter(person => person.id !== id));
+        alert(`${deletePerson.name} is deleted`);
+      });
   }
 
   const reg = new RegExp(newFilter.toLowerCase());
@@ -88,6 +120,7 @@ const App = () => {
       handleNameChange={handleNameChange}
       handlePhoneChange={handlePhoneChange}
       filteredPersons={filteredPersons}
+      handleDeleteButton={handleDeleteButton}
     />
   )
 }

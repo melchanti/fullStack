@@ -17,6 +17,18 @@
       "content": "GET and POST are the most important method of HTTP protocol",
       "date": "2022-1-17T19:20:14.298Z",
       "important": true
+    },
+    {
+      "content": "CSS is fun",
+      "date": "2022-07-27T21:03:01.036Z",
+      "important": true,
+      "id": 4
+    },
+    {
+      "content": "FrontEnd is amazing",
+      "date": "2022-07-27T21:28:13.901Z",
+      "important": false,
+      "id": 5
     }
   ]
 }
