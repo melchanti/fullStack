@@ -70,6 +70,7 @@ const App = () => {
   const [newPhone, setNewPhone] = useState('');
   const [newFilter, setFiltered] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
+  console.log(persons);
 
   useEffect(() => {
     personService
