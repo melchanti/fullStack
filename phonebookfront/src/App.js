@@ -28,6 +28,28 @@ const Notification = ({ message }) => {
 
 }
 
+const Error = ( {message}) => {
+  const notificationStyle = {
+    color: "red",
+    background: "lightgrey",
+    fontSize: 20,
+    borderStyle: "solid",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  }
+
+  if (message === null) {
+    return null;
+  }
+
+  return (
+      <div style={notificationStyle}>
+        {message}
+      </div>
+  );
+}
+
 const PhoneBook = (props) => {
   const {
     newFilter, 
@@ -39,15 +61,24 @@ const PhoneBook = (props) => {
     handlePhoneChange, 
     filteredPersons, 
     handleDeleteButton,
-    errorMessage
+    errorMessage,
+    notificationMessage
   } = props;
   return (
     <div>
-    <h2>Phonebook</h2>
-    <Notification message={errorMessage} />
+    <h1>Phonebook</h1>
+    <Error message={errorMessage} />
+    <Notification message={notificationMessage} />
     <Filter newFilter={newFilter} onChange={handleFilterChange} />
 
-    <h3>add a new</h3>
+    <div style={{"width":"40%", "style":"inline"}}>
+    <h2>Contacts</h2>
+
+    <Persons filteredPersons={filteredPersons} handleDeleteButton={handleDeleteButton}/>
+    </div>
+
+    <div style={{"width":"40%", "style":"inline"}}>
+    <h2>Add Contact</h2>
 
     <PersonForm
       onSubmit={handleSubmit}
@@ -56,11 +87,9 @@ const PhoneBook = (props) => {
       handleNameChange={handleNameChange}
       handlePhoneChange={handlePhoneChange}
     />
+    </div>
 
-    <h3>Numbers</h3>
-
-    <Persons filteredPersons={filteredPersons} handleDeleteButton={handleDeleteButton}/>
-  </div>
+    </div>
   )
 }
 const App = () => {
@@ -70,6 +99,8 @@ const App = () => {
   const [newPhone, setNewPhone] = useState('');
   const [newFilter, setFiltered] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
+  const [notificationMessage, setNotificationMessage] = useState(null);
+
   console.log(persons);
 
   useEffect(() => {
@@ -88,13 +119,16 @@ const App = () => {
       .update(editedPerson.id, editedPerson)
       .then(returnedPerson => {
         setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson));
-        setErrorMessage(`${returnedPerson.name} edited`);
+        setNotificationMessage(`${returnedPerson.name} edited`);
         setTimeout(() => {
-          setErrorMessage(null);
-        }, 2000);
+          setNotificationMessage(null);
+        }, 3000);
       }).catch(error => {
         setErrorMessage(`${editedPerson.name} has already been removed from the server`);
         setPersons(persons.filter(person => person.id !== editedPerson.id));
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 3000);
       })
   }
   const handleSubmit = (event) => {
@@ -117,10 +151,15 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName('');
         setNewPhone('');
-        setErrorMessage(`${returnedPerson.name} created`);
+        setNotificationMessage(`${returnedPerson.name} created`);
+        setTimeout(() => {
+          setNotificationMessage(null);
+        }, 3000);
+      }).catch(error => {
+        setErrorMessage(`${error.response.data.error}`);
         setTimeout(() => {
           setErrorMessage(null);
-        }, 2000);
+        }, 3000);
       });
   }
 
@@ -140,20 +179,20 @@ const App = () => {
     const deletePerson = persons.find(person => person.id === id);
 
     if (!window.confirm(`Delete ${deletePerson.name}?`)) {
-      setErrorMessage(`${deletePerson.name} wasn't deleted`);
+      setNotificationMessage(`${deletePerson.name} wasn't deleted`);
       setTimeout(() => {
-        setErrorMessage(null);
-      }, 2000);
+        setNotificationMessage(null);
+      }, 3000);
       return;
     }
     personService
       .remove(id)
       .then(message => {
         setPersons(persons.filter(person => person.id !== id));
-        setErrorMessage(`${deletePerson.name} is deleted`);
+        setNotificationMessage(`${deletePerson.name} is deleted`);
         setTimeout(() => {
-          setErrorMessage(null);
-        }, 2000);
+          setNotificationMessage(null);
+        }, 3000);
       });
   }
 
@@ -175,6 +214,7 @@ const App = () => {
       filteredPersons={filteredPersons}
       handleDeleteButton={handleDeleteButton}
       errorMessage={errorMessage}
+      notificationMessage={notificationMessage}
     />
   )
 }
