@@ -54,7 +54,7 @@ expressRouter.delete('/:id', middleware.userExtractor, async (request, response,
   
 });
 
-expressRouter.put('/:id', (request, response, next) => {
+expressRouter.put('/:id', async (request, response, next) => {
 
   const body = request.body;
   const blog = {
@@ -64,7 +64,7 @@ expressRouter.put('/:id', (request, response, next) => {
     likes: Number(body.likes)
   }
 
-  const updatedNote = awaitNote.findByIdAndUpdate(
+  const updatedNote = await Blog.findByIdAndUpdate(
     request.params.id,
     blog,
     {new: true}
