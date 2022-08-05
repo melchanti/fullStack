@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "bloglist-frontend"
+		},
+		{
+			"path": "../part4/blogList"
+		}
+	],
+  "settings": {}
+}
