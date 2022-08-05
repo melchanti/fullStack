@@ -1,26 +1,26 @@
 import Togglable from "./Togglable";
 import blogService from "../services/blogs";
 
-const Blogform = ({blog, setBlogs}) => {
-  const handleLike = async (event) => {
-    event.preventDefault();
-    blog.likes += 1;
+const Blogform = ({blog, handleLike, handleRemove}) => {
+  // const handleLike = async (event, blog) => {
+  //   event.preventDefault();
+  //   blog.likes += 1;
 
-    await blogService.update(blog);
-    const blogs = await blogService.getAll();
-    setBlogs(blogs);
-  }
+  //   await blogService.update(blog);
+  //   const blogs = await blogService.getAll();
+  //   setBlogs(blogs);
+  // }
 
-  const handleRemove = async (event) => {
-    event.preventDefault();
-    if(!window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      return;
-    }
+  // const handleRemove = async (event, blog) => {
+  //   event.preventDefault();
+  //   if(!window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+  //     return;
+  //   }
 
-    await blogService.remove(blog.id);
-    const blogs = await blogService.getAll();
-    setBlogs(blogs);
-  }
+  //   await blogService.remove(blog.id);
+  //   const blogs = await blogService.getAll();
+  //   setBlogs(blogs);
+  // }
 
   return (
     <>
@@ -28,7 +28,7 @@ const Blogform = ({blog, setBlogs}) => {
         url: {blog.url} {'\n'}
       </div>
       <div>
-        likes: {blog.likes} <button onClick={handleLike}>like</button>
+        likes: {blog.likes} <button onClick={(event) => handleLike(event, blog)}>like</button>
       </div>
       {
       blog.user ? 
@@ -36,9 +36,10 @@ const Blogform = ({blog, setBlogs}) => {
         <div></div>
       }
       {
-        blog.user.username === JSON.parse(window.localStorage.getItem('loggedBlogUser')).username ?
-        <button onClick={handleRemove}>remove</button> :
-        <div></div>
+        !blog.user ? null :
+          blog.user.username === JSON.parse(window.localStorage.getItem('loggedBlogUser')).username ?
+          <button onClick={(event) => handleRemove(event, blog)}>remove</button> :
+          <div></div>
       }
     </>
     
@@ -46,7 +47,7 @@ const Blogform = ({blog, setBlogs}) => {
 
 }
   
-const Blog = ({blog, setBlogs}) => {
+const Blog = ({blog, handleLike, handleRemove}) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -56,10 +57,10 @@ const Blog = ({blog, setBlogs}) => {
   }
 
   return (
-    <div style={blogStyle}>
-      {blog.title} {blog.author}
+    <div style={blogStyle} className='blog'>
+      <div>{blog.title}</div> <div>{blog.author}</div>
       <Togglable buttonLabel="view" buttonHide="hide">
-        <Blogform blog={blog} setBlogs={setBlogs}/>
+        <Blogform blog={blog} handleLike={handleLike} handleRemove={handleRemove}/>
       </Togglable>
     </div>  
   )

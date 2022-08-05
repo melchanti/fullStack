@@ -31,8 +31,6 @@ expressRouter.post('/', middleware.userExtractor, async (request, response) => {
     return response.status(400).end();
   }
 
-  const users = await User.find({});
-
   const savedBlog = await blog.save();
   user.blogs = user.blogs.concat(savedBlog._id);
   user.save();
@@ -42,7 +40,6 @@ expressRouter.post('/', middleware.userExtractor, async (request, response) => {
 expressRouter.delete('/:id', middleware.userExtractor, async (request, response, next) => {
   const user = request.user;
   const blog = await Blog.findById(request.params.id);
-  console.log(user);
   if (!(blog.user.toString() === user._id.toString())) {
     return response.status(401).send({
       error: 'invalid user'

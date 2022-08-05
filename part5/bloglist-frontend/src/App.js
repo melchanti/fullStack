@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
@@ -28,12 +28,12 @@ const loginForm = ({handleLogin, username, setUsername, password, setPassword}) 
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button type="submit">login</button>
+        <button id='login-button' type="submit">login</button>
       </form> 
   </div>
 )
 
-const blogsContent = ({blogs, setBlogs}) => {
+const blogsContent = ({blogs, handleLike, handleRemove}) => {
   blogs.sort((a, b) => b.likes-a.likes);
 
   return (
@@ -41,24 +41,32 @@ const blogsContent = ({blogs, setBlogs}) => {
       <h2>blogs</h2>
       
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} setBlogs={setBlogs}/>
+        <Blog key={blog.id} blog={blog} handleLike={handleLike} handleRemove={handleRemove}/>
       )}
     </div>
   )
 }
-const loggedInDisplay = ({user, blogs, handleLogout, newBlog, setBlogs}) => (
-  <div>
+const loggedInDisplay = ({user, blogs, handleLogout, newBlog, handleLike, handleRemove, blogFormRef}) => {
+  
+  return (
     <div>
-      {user.name} logged in<button onClick={handleLogout}>logout</button>
+      <div>
+        {user.name} logged in<button onClick={handleLogout}>logout</button>
+      </div>
+      <Togglable buttonLabel="new blog" buttonHide="cancel" ref={blogFormRef}>
+        <BlogForm newBlog={newBlog}/>
+      </Togglable>
+      
+      {blogsContent({blogs, handleLike, handleRemove})}
     </div>
-    <Togglable buttonLabel="new blog" buttonHide="cancel">
-      <BlogForm newBlog={newBlog}/>
-    </Togglable>
-    
-    {blogsContent({blogs, setBlogs})}
-  </div>
-)
+  )
+  }
 
+const getBlogs = (setBlogs) => {
+  blogService.getAll().then(blogs =>
+    setBlogs( blogs )
+  )
+}
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
@@ -67,6 +75,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [notificationMessage, setNotificationMessage] = useState(null);
 
+  const blogFormRef = useRef();
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
@@ -109,9 +118,11 @@ const App = () => {
     try {
       const blog = await blogService.create({title, author, url});
       setNotificationMessage(`${blog.title} created`);
+      getBlogs(setBlogs);
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000);
+      blogFormRef.current.toggleVisibility();
     } catch (exception) {
       setErrorMessage(`${exception.message}`);
       setTimeout(() => {
@@ -120,12 +131,32 @@ const App = () => {
     }
   }
 
+  const handleLike = async (event, blog) => {
+    event.preventDefault();
+    blog.likes += 1;
+
+    await blogService.update(blog);
+    const blogs = await blogService.getAll();
+    setBlogs(blogs);
+  }
+
+  const handleRemove = async (event, blog) => {
+    event.preventDefault();
+    if(!window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      return;
+    }
+
+    await blogService.remove(blog.id);
+    const blogs = await blogService.getAll();
+    setBlogs(blogs);
+  }
+
   return (
     <div>
       <Notification errorMessage={errorMessage} notificationMessage={notificationMessage} />
       {user === null ? 
         loginForm({handleLogin, username, setUsername, password, setPassword}) :
-        loggedInDisplay({user, blogs, handleLogout, newBlog, setBlogs})
+        loggedInDisplay({user, blogs, handleLogout, newBlog, handleLike, handleRemove, blogFormRef})
       }
       
     </div>
