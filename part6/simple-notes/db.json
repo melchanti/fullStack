@@ -99,6 +99,11 @@
       "content": "Redux is important",
       "important": false,
       "id": 20
+    },
+    {
+      "content": "Holaaaaa",
+      "important": false,
+      "id": 21
     }
   ]
 }
