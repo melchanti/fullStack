@@ -1,0 +1,104 @@
+{
+  "notes": [
+    {
+      "content": "the app state is in redux store",
+      "important": true,
+      "id": 1
+    },
+    {
+      "content": "state changes are made with actions",
+      "important": false,
+      "id": 2
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 3
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 4
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 5
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 6
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 7
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 8
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 9
+    },
+    {
+      "content": "Holaaaaa",
+      "important": false,
+      "id": 10
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 11
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 12
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 13
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 14
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 15
+    },
+    {
+      "content": "Hol1qrew",
+      "important": false,
+      "id": 16
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 17
+    },
+    {
+      "content": "Holaaaaa",
+      "important": false,
+      "id": 18
+    },
+    {
+      "content": "Hol1qrew",
+      "important": false,
+      "id": 19
+    },
+    {
+      "content": "Redux is important",
+      "important": false,
+      "id": 20
+    }
+  ]
+}
