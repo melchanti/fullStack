@@ -1,0 +1,42 @@
+{
+  "notes": [
+    {
+      "content": "custom-hooks are great",
+      "id": 1
+    },
+    {
+      "content": "the best featrure ever <3",
+      "id": 2
+    },
+    {
+      "content": "Redux is entertaining",
+      "id": 3
+    },
+    {
+      "content": "Custom hooks are the best",
+      "id": 4
+    }
+  ],
+  "persons": [
+    {
+      "name": "mluukkai",
+      "number": "040-5483923",
+      "id": 1
+    },
+    {
+      "name": "kaltsoon",
+      "number": "045-2323456",
+      "id": 2
+    },
+    {
+      "name": "fsfsdfsf",
+      "number": "234202411",
+      "id": 3
+    },
+    {
+      "name": "Mo",
+      "number": "322-242-1414",
+      "id": 4
+    }
+  ]
+}
